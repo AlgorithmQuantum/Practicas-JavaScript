@@ -8,7 +8,7 @@ let libro = {
     
     // Método para describir el libro
     describirLibro: function() {
-        console.log(`📚 Libro titulado "${this.titulo}", escrito por ${this.autor} en el año ${this.anio}, el estado es: ${this.estado}.`);
+        console.log(` Libro titulado "${this.titulo}", escrito por ${this.autor} en el año ${this.anio}, el estado es: ${this.estado}.`);
     }
 };
 
