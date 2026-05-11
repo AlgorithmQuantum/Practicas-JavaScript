@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Password Generator</title>
+
+    <style>
+        *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+        background:#0f172a;
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        color:white;
+        }
+
+        .container{
+        background:#1e293b;
+        width:380px;
+        padding:25px;
+        border-radius:15px;
+        box-shadow:0 0 20px rgba(0,0,0,.5);
+        }
+
+        h1{
+        text-align:center;
+        margin-bottom:20px;
+        color:#38bdf8;
+        }
+
+        .password-box{
+        display:flex;
+        margin-bottom:20px;
+        }
+
+        .password-box input{
+        flex:1;
+        padding:12px;
+        border:none;
+        outline:none;
+        background:#0f172a;
+        color:white;
+        font-size:18px;
+        border-radius:10px 0 0 10px;
+        }
+
+        .password-box button{
+        width:60px;
+        border:none;
+        cursor:pointer;
+        background:#38bdf8;
+        color:white;
+        font-weight:bold;
+        border-radius:0 10px 10px 0;
+        }
+
+        .option{
+        margin:12px 0;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        }
+
+        .range-container{
+        margin:20px 0;
+        }
+
+        input[type="range"]{
+        width:100%;
+        }
+
+        .generate-btn{
+        width:100%;
+        padding:14px;
+        margin-top:20px;
+        border:none;
+        border-radius:10px;
+        background:#22c55e;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+        transition:.3s;
+        }
+
+        .generate-btn:hover{
+        background:#16a34a;
+        }
+
+        .strength{
+        margin-top:20px;
+        padding:10px;
+        text-align:center;
+        border-radius:10px;
+        font-weight:bold;
+        }
+
+        .weak{
+        background:#dc2626;
+        }
+
+        .medium{
+        background:#f59e0b;
+        }
+
+        .strong{
+        background:#16a34a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Password Generator</h1>
+
+        <div class="password-box">
+        <input type="text" id="password" readonly>
+        <button id="copyBtn">Copy</button>
+        </div>
+
+        <div class="range-container">
+        <label>
+            Longitud:
+            <span id="lengthValue">12</span>
+        </label>
+
+        <input type="range" min="8" max="30" value="12" id="length">
+        </div>
+
+        <div class="option">
+        <label>Mayúsculas</label>
+        <input type="checkbox" id="uppercase" checked>
+        </div>
+
+        <div class="option">
+        <label>Minúsculas</label>
+        <input type="checkbox" id="lowercase" checked>
+        </div>
+
+        <div class="option">
+        <label>Números</label>
+        <input type="checkbox" id="numbers" checked>
+        </div>
+
+        <div class="option">
+        <label>Símbolos</label>
+        <input type="checkbox" id="symbols">
+        </div>
+
+        <button class="generate-btn" id="generateBtn">
+        Generar Contraseña
+        </button>
+
+        <div class="strength" id="strength">
+        Seguridad: MEDIA
+        </div>
+
+    </div>
+
+    <script>
+
+        const password = document.getElementById("password");
+        const length = document.getElementById("length");
+        const lengthValue = document.getElementById("lengthValue");
+
+        const uppercase = document.getElementById("uppercase");
+        const lowercase = document.getElementById("lowercase");
+        const numbers = document.getElementById("numbers");
+        const symbols = document.getElementById("symbols");
+
+        const generateBtn = document.getElementById("generateBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const strength = document.getElementById("strength");
+
+        const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+        const numberChars = "0123456789";
+        const symbolChars = "!@#$%^&*()_+[]{}<>?/";
+
+        length.addEventListener("input", () => {
+        lengthValue.textContent = length.value;
+        });
+
+        function generatePassword(){
+
+        let chars = "";
+
+        if(uppercase.checked) chars += upperChars;
+        if(lowercase.checked) chars += lowerChars;
+        if(numbers.checked) chars += numberChars;
+        if(symbols.checked) chars += symbolChars;
+
+        if(chars === ""){
+            alert("Selecciona al menos una opción");
+            return;
+        }
+
+        let generatedPassword = "";
+
+        for(let i = 0; i < length.value; i++){
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            generatedPassword += chars[randomIndex];
+        }
+
+        password.value = generatedPassword;
+
+        checkStrength(generatedPassword);
+        }
+
+        function checkStrength(pass){
+
+        let score = 0;
+
+        if(pass.length >= 12) score++;
+        if(/[A-Z]/.test(pass)) score++;
+        if(/[0-9]/.test(pass)) score++;
+        if(/[^A-Za-z0-9]/.test(pass)) score++;
+
+        strength.className = "strength";
+
+        if(score <= 2){
+            strength.textContent = "Seguridad: DÉBIL";
+            strength.classList.add("weak");
+        }
+        else if(score === 3){
+            strength.textContent = "Seguridad: MEDIA";
+            strength.classList.add("medium");
+        }
+        else{
+            strength.textContent = "Seguridad: FUERTE";
+            strength.classList.add("strong");
+        }
+        }
+
+        copyBtn.addEventListener("click", () => {
+
+        if(password.value === "") return;
+
+        navigator.clipboard.writeText(password.value);
+
+        copyBtn.textContent = "Copied!";
+
+        setTimeout(() => {
+            copyBtn.textContent = "Copy";
+        }, 1500);
+        });
+
+        generateBtn.addEventListener("click", generatePassword);
+
+        generatePassword();
+
+    </script>
+
+</body>
+</html>
